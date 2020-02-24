@@ -21,7 +21,7 @@ object GameOfLife extends JFXApp {
 
   private val windowWidth = 600
   private val windowHeight = 600
-  private val cellSize = 20
+  private val cellSize = 6
   val calcNeighbors = calcNeighborsWithScreenSizes(windowWidth, windowHeight, cellSize)(_, _)
 
   val pixels = for {
