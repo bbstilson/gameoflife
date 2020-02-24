@@ -1,21 +1,6 @@
 package org.bbstilson.gol
 
-import scalafx.beans.property.ObjectProperty
-import scalafx.scene.paint.Color
-import Color._
-
 object GameOfLifeUtils {
-  case class Vector2(x: Int, y: Int)
-  case class Cell(age: Option[Int], neighbors: List[Vector2])
-
-  object Cell {
-
-    def apply(neighbors: List[Vector2]): Cell = Cell(randomAge, neighbors)
-
-    def randomAge: Option[Int] = {
-      if (Math.random > 0.95) Some(1) else None
-    }
-  }
 
   def calcNeighborsWithScreenSizes(
     width: Int,
@@ -44,18 +29,5 @@ object GameOfLifeUtils {
       if (x + cellSize > (width - cellSize) || y + cellSize > (height - cellSize)) None
       else Some(Vector2(x + cellSize, y + cellSize))
     ).flatten
-  }
-
-  def ageToColor(optAge: Option[Int]): Color = {
-    optAge
-      .map {
-        case 1 => RED
-        case 2 => ORANGE
-        case 3 => YELLOW
-        case 4 => GREEN
-        case 5 => BLUE
-        case 6 => VIOLET
-      }
-      .getOrElse(WHITESMOKE)
   }
 }

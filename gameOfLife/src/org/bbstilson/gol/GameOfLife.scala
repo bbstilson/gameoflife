@@ -2,25 +2,18 @@ package org.bbstilson.gol
 
 import javafx.scene.{paint => jfxsp}
 import scalafx.Includes._
+import scalafx.animation._
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp._
 import scalafx.beans.property.ObjectProperty
-import scalafx.scene.Scene
+import scalafx.event._
+import scalafx.scene._
 import scalafx.scene.paint.Color._
 import scalafx.scene.shape.Rectangle
+import scalafx.util.{Duration => FxDuration}
 
-import scala.concurrent.duration._
 import scala.collection.mutable.{Map => MutableMap}
-import scalafx.animation.Timeline
-import scalafx.animation.Timeline.Indefinite
 
-/**
-  * The universe of the Game of Life is an infinite, two-dimensional orthogonal
-  * grid of square cells, each of which is in one of two * possible states, alive
-  * or dead, (or populated and unpopulated, respectively). Every cell interacts
-  * with its eight neighbors, *which are the cells that are horizontally,
-  * vertically, or diagonally adjacent.
-  */
 class GameOfLife extends JFXApp {
   import GameOfLifeUtils._
 
@@ -49,7 +42,7 @@ class GameOfLife extends JFXApp {
     val m = MutableMap.empty[Vector2, ObjectProperty[jfxsp.Color]]
     world.foreach {
       case (pos, cell) =>
-        m(pos) = ObjectProperty(ageToColor(cell.age))
+        m(pos) = ObjectProperty(Cell.stateToColor(cell.state))
     }
     m
   }
@@ -72,19 +65,47 @@ class GameOfLife extends JFXApp {
     }
   }
 
-  // new Timeline {
-  //   cycleCount = Indefinite
-  //   autoReverse = true
-  //   keyFrames =
-  // }
+  val timeline = new Timeline {
+    cycleCount = Timeline.Indefinite
+    keyFrames = KeyFrame(FxDuration(100), onFinished = step)
+  }.play()
 
-  // def run(): Unit = {
-  //   while (true) {
-  //     Thread.sleep(1.seconds.toMillis)
-  //     world.map {
-  //       case (pos, cell) =>
-  //         cell.rect.fill.value = pickColor(Some(Math.floor(Math.random * 7).toInt))
-  //     }
-  //   }
-  // }
+  def step(e: ActionEvent): Unit = {
+    pixels.foreach {
+      case pos @ Vector2(px, py) =>
+        val currCell = world(pos)
+        val numAliveNeighbors = currCell.neighbors
+          .map(world.apply)
+          .map(_.state)
+          .collect { case Alive(_) => 1 }
+          .sum
+
+        numAliveNeighbors match {
+          // Any dead cell with three live neighbors becomes a live cell.
+          // Any live cell with two or three neighbors survives.
+          // All other cells die/stay dead in the next generation.
+          case n if n == 3 && currCell.isDead => resurrect(pos, currCell)
+          case n if n == 2 || n == 3          => ageCell(pos, currCell)
+          case _                              => killCell(pos, currCell)
+        }
+    }
+  }
+
+  private def resurrect(v: Vector2, c: Cell): Unit = {
+    val newCell = c.copy(state = Alive(1))
+    world(v) = newCell
+    colorMap(v).value = Cell.stateToColor(newCell.state)
+  }
+
+  private def ageCell(v: Vector2, c: Cell): Unit = {
+    val newCell = c.age
+    world(v) = newCell
+    colorMap(v).value = Cell.stateToColor(newCell.state)
+  }
+
+  private def killCell(v: Vector2, c: Cell): Unit = {
+    val newCell = c.copy(state = Dead)
+    world(v) = newCell
+    colorMap(v).value = Cell.stateToColor(newCell.state)
+  }
 }

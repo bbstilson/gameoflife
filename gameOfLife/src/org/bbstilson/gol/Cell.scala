@@ -1,23 +1,45 @@
 package org.bbstilson.gol
 
-// case class Vector2(x: Int, y: Int)
+import scalafx.scene.paint.Color
+import Color._
 
-// /**
-//   * Represents individual cell.
-//   *
-//   * @param age - None if dead.
-//   * @param position
-//   */
-// case class Cell(age: Option[Int], position: Vector2) {
+case class Cell(state: State, neighbors: List[Vector2]) {
 
-//   def tick(numNeighbors: Int): Cell = {
-//     numNeighbors match {
-//       // Any dead cell with three live neighbors becomes a live cell.
-//       // Any live cell with two or three neighbors survives.
-//       // All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-//       case n if n == 3 && age.isEmpty => this.copy(age = Some(1))
-//       case n if n == 2 || n == 3      => this.copy(age = age.map(_ + 1))
-//       case n if n > 3                 => this.copy(age = None)
-//     }
-//   }
-// }
+  def age: Cell = {
+    val nextState = state match {
+      case Alive(age) => Alive(age + 1)
+      case Dead       => Dead
+    }
+    this.copy(state = nextState)
+  }
+
+  def isDead: Boolean = state match {
+    case Alive(_) => false
+    case Dead     => true
+  }
+}
+
+object Cell {
+
+  def apply(neighbors: List[Vector2]): Cell = Cell(randomState, neighbors)
+
+  private def randomState: State = {
+    if (Math.random > 0.7) Alive(1) else Dead
+  }
+
+  def stateToColor(state: State): Color = {
+    state match {
+      case Alive(age) =>
+        age match {
+          case 1 => Color(0.5, 0.8, 0.2, 0.3)
+          case 2 => Color(0.5, 0.8, 0.2, 0.4)
+          case 3 => Color(0.5, 0.8, 0.2, 0.5)
+          case 4 => Color(0.5, 0.8, 0.2, 0.6)
+          case 5 => Color(0.5, 0.8, 0.2, 0.7)
+          case 6 => Color(0.5, 0.8, 0.2, 0.9)
+          case _ => Color(0.5, 0.8, 0.2, 1.0)
+        }
+      case Dead => WHITESMOKE
+    }
+  }
+}
