@@ -15,8 +15,18 @@ object gameOfLife extends ScalaModule {
   val javaFXModules = List("base", "controls", "fxml", "graphics", "media", "swing", "web")
     .map(m => ivy"org.openjfx:javafx-$m:12.0.2;classifier=$osName")
 
-  def ivyDeps =
+  def ivyDeps = {
     Agg(
       ivy"org.scalafx::scalafx:12.0.2-R18"
     ) ++ javaFXModules
+  }
+
+  object test extends Tests {
+
+    def ivyDeps = Agg(
+      ivy"org.scalactic::scalactic:3.1.1",
+      ivy"org.scalatest::scalatest:3.1.1"
+    )
+    def testFrameworks = Seq("org.scalatest.tools.Framework")
+  }
 }
