@@ -1,10 +1,6 @@
 package org.bbstilson.gol
 
 import scalafx.scene.paint.Color._
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
-
-trait UnitSpec extends AnyFlatSpec with Matchers
 
 class GameOfLifeUtilsSpec extends UnitSpec {
   import GameOfLifeUtils._
@@ -53,9 +49,5 @@ class GameOfLifeUtilsSpec extends UnitSpec {
       Vector2(2, 1)
     )
     f(2, 2) shouldBe List(Vector2(2, 1), Vector2(1, 2), Vector2(1, 1))
-  }
-
-  "pickColor" should "pick colors" in {
-    pickColor(Some(1)) shouldBe RED
   }
 }
