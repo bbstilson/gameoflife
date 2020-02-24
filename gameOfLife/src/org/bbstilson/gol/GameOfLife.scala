@@ -14,7 +14,7 @@ import scalafx.util.{Duration => FxDuration}
 
 import scala.collection.mutable.{Map => MutableMap}
 
-class GameOfLife extends JFXApp {
+object GameOfLife extends JFXApp {
   import GameOfLifeUtils._
 
   private val HEADER_HEIGHT = 22
@@ -38,7 +38,7 @@ class GameOfLife extends JFXApp {
     m
   }
 
-  val colorMap: MutableMap[Vector2, ObjectProperty[jfxsp.Color]] = {
+  val color: MutableMap[Vector2, ObjectProperty[jfxsp.Color]] = {
     val m = MutableMap.empty[Vector2, ObjectProperty[jfxsp.Color]]
     world.foreach {
       case (pos, cell) =>
@@ -59,7 +59,7 @@ class GameOfLife extends JFXApp {
             y = py
             width = cellSize
             height = cellSize
-            fill <== colorMap(pos)
+            fill <== color(pos)
           }
       }
     }
@@ -94,18 +94,18 @@ class GameOfLife extends JFXApp {
   private def resurrect(v: Vector2, c: Cell): Unit = {
     val newCell = c.copy(state = Alive(1))
     world(v) = newCell
-    colorMap(v).value = Cell.stateToColor(newCell.state)
+    color(v).value = Cell.stateToColor(newCell.state)
   }
 
   private def ageCell(v: Vector2, c: Cell): Unit = {
     val newCell = c.age
     world(v) = newCell
-    colorMap(v).value = Cell.stateToColor(newCell.state)
+    color(v).value = Cell.stateToColor(newCell.state)
   }
 
   private def killCell(v: Vector2, c: Cell): Unit = {
     val newCell = c.copy(state = Dead)
     world(v) = newCell
-    colorMap(v).value = Cell.stateToColor(newCell.state)
+    color(v).value = Cell.stateToColor(newCell.state)
   }
 }

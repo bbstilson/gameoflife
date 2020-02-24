@@ -6,11 +6,10 @@ import Color._
 case class Cell(state: State, neighbors: List[Vector2]) {
 
   def age: Cell = {
-    val nextState = state match {
+    this.copy(state = state match {
       case Alive(age) => Alive(age + 1)
       case Dead       => Dead
-    }
-    this.copy(state = nextState)
+    })
   }
 
   def isDead: Boolean = state match {
@@ -23,12 +22,11 @@ object Cell {
 
   def apply(neighbors: List[Vector2]): Cell = Cell(randomState, neighbors)
 
-  private def randomState: State = {
-    if (Math.random > 0.7) Alive(1) else Dead
-  }
+  private def randomState: State = if (Math.random > 0.7) Alive(1) else Dead
 
   def stateToColor(state: State): Color = {
     state match {
+      case Dead => WHITESMOKE
       case Alive(age) =>
         age match {
           case 1 => Color(0.5, 0.8, 0.2, 0.3)
@@ -39,7 +37,6 @@ object Cell {
           case 6 => Color(0.5, 0.8, 0.2, 0.9)
           case _ => Color(0.5, 0.8, 0.2, 1.0)
         }
-      case Dead => WHITESMOKE
     }
   }
 }
