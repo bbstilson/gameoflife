@@ -1,13 +1,21 @@
 package org.bbstilson.gol
 
-import javafx.scene.{paint => jfxsp}
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.paint.Color
 import Color._
 
 object GameOfLifeUtils {
   case class Vector2(x: Int, y: Int)
-  case class Cell(color: ObjectProperty[jfxsp.Color], neighbors: List[Vector2])
+  case class Cell(age: Option[Int], neighbors: List[Vector2])
+
+  object Cell {
+
+    def apply(neighbors: List[Vector2]): Cell = Cell(randomAge, neighbors)
+
+    def randomAge: Option[Int] = {
+      if (Math.random > 0.95) Some(1) else None
+    }
+  }
 
   def calcNeighborsWithScreenSizes(
     width: Int,
@@ -38,7 +46,7 @@ object GameOfLifeUtils {
     ).flatten
   }
 
-  def pickColor(optAge: Option[Int]): Color = {
+  def ageToColor(optAge: Option[Int]): Color = {
     optAge
       .map {
         case 1 => RED
@@ -48,6 +56,6 @@ object GameOfLifeUtils {
         case 5 => BLUE
         case 6 => VIOLET
       }
-      .getOrElse(WhiteSmoke)
+      .getOrElse(WHITESMOKE)
   }
 }
